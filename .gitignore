@@ -20,3 +20,7 @@ logs/
 
 # AI 协作目录（WorkBuddy 内部记忆/脚本，非项目源码，不纳入版本管理）
 .workbuddy/
+
+# 前端构建产物与 npm 缓存（不应纳入版本管理）
+**/dist-verify20/
+**/.npm-cache/
