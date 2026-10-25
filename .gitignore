@@ -1,0 +1,22 @@
+# 构建产物
+**/target/
+**/dist/
+**/node_modules/
+
+# 本地 Maven 仓库（仅用于沙箱环境下的离线构建，不纳入版本管理）
+.m2/
+
+# 日志与临时文件
+*.log
+logs/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# 上传与存储目录
+**/upload/
+**/storage/
+
+# AI 协作目录（WorkBuddy 内部记忆/脚本，非项目源码，不纳入版本管理）
+.workbuddy/
