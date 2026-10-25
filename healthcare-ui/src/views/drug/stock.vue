@@ -338,7 +338,9 @@ function recordTypeName(type: number) {
 }
 
 function warehouseName(id: unknown) {
-  const hit = warehouseOptions.value.find((item) => item.value === Number(id))
+  // 后端 Long 经 Jackson 序列化成字符串（如 "1"），这里必须用 String 对 String 比，
+  // 不能用 Number(id)——"1" === 1 恒为 false，会把库房列全显示成 "-"。
+  const hit = warehouseOptions.value.find((item) => String(item.value) === String(id))
   return hit ? hit.label : '-'
 }
 

@@ -61,3 +61,14 @@ WHERE NOT EXISTS (SELECT 1 FROM `sys_role_menu` WHERE `role_id` = 3 AND `menu_id
 INSERT INTO `sys_role_menu` (`id`, `role_id`, `menu_id`)
 SELECT @row := @row + 1, 4, 30204 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM `sys_role_menu` WHERE `role_id` = 4 AND `menu_id` = 30204);
+
+-- ---------------------------------------------------------------------
+-- 补 inpatient:bed:list（床位查询）给医生
+--   住院登记页(inpatient/admission) 打开时还要调 listBeds() 拉床位下拉，
+--   对应接口 @PreAuthorize 要求 inpatient:bed:list(50204)。
+--   医生此前只有 patient:list，没有这条，导致点"建议住院"时既弹"无权限"、
+--   床位下拉又全空、报"没有床位可以选择"。这里补上 50204。
+-- ---------------------------------------------------------------------
+INSERT INTO `sys_role_menu` (`id`, `role_id`, `menu_id`)
+SELECT @row := @row + 1, 3, 50204 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `sys_role_menu` WHERE `role_id` = 3 AND `menu_id` = 50204);

@@ -264,17 +264,29 @@ public class DrugService {
             if (item.getDrugId() == null) {
                 continue;
             }
-            BizStock stock = bizStockMapper.selectOne(Wrappers.<BizStock>lambdaQuery()
-                    .eq(BizStock::getDrugId, item.getDrugId())
-                    .eq(request.getWarehouseId() != null, BizStock::getWarehouseId, request.getWarehouseId())
-                    .orderByAsc(BizStock::getExpireDate)
-                    .last("limit 1"));
+            // 优先从「发药库房」出库；该库房没有这味药时（一个处方的药可能分存多个库房，
+            // 例如门诊药房没有、只在中心库房有），退而求其次按效期从任意有货库房出。
+            // 否则会因为个别药品库房不匹配直接抛错，导致整单发药失败、库存与流水都不动。
+            BizStock stock = null;
+            if (request.getWarehouseId() != null) {
+                stock = bizStockMapper.selectOne(Wrappers.<BizStock>lambdaQuery()
+                        .eq(BizStock::getDrugId, item.getDrugId())
+                        .eq(BizStock::getWarehouseId, request.getWarehouseId())
+                        .orderByAsc(BizStock::getExpireDate)
+                        .last("limit 1"));
+            }
+            if (stock == null) {
+                stock = bizStockMapper.selectOne(Wrappers.<BizStock>lambdaQuery()
+                        .eq(BizStock::getDrugId, item.getDrugId())
+                        .orderByAsc(BizStock::getExpireDate)
+                        .last("limit 1"));
+            }
             if (stock == null) {
                 throw BizException.badRequest("药品「" + item.getDrugName() + "」无库存记录");
             }
             int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
             if (stock.getQuantity() < quantity) {
-                throw BizException.badRequest("药品「" + item.getDrugName() + "」库存不足");
+                throw BizException.badRequest("药品「" + item.getDrugName() + "」库存不足（当前 " + stock.getQuantity() + "）");
             }
             stock.setQuantity(stock.getQuantity() - quantity);
             bizStockMapper.updateById(stock);
