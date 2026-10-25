@@ -1,0 +1,8 @@
+# 开发环境：控制台输出 SQL
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.xunfang.healthcare: debug

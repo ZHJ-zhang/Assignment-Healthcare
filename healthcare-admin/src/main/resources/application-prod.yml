@@ -1,0 +1,11 @@
+# 生产环境：关闭 SQL 日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  level:
+    root: warn
+    com.xunfang.healthcare: info
+  file:
+    name: logs/healthcare-admin.log
